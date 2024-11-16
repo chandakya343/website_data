@@ -3,18 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple HTML Page</title>
+    <title>Terminal Style Webpage</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #terminal {
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .line {
+            white-space: pre-wrap;
+            font-size: 1.2em;
+        }
+
+        .blinking-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #00ff00;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Simple HTML Page</h1>
-    </header>
-    <main>
-        <p>This is a basic HTML page created for demonstration purposes.</p>
-        <p>Feel free to modify and expand it as needed!</p>
-    </main>
-    <footer>
-        <p>&copy; 2024 Your Name. All rights reserved.</p>
-    </footer>
+    <div id="terminal">
+        <div class="line" id="output"></div>
+        <div class="line"><span class="blinking-cursor"></span></div>
+    </div>
+    <script>
+        const output = document.getElementById('output');
+        const cursor = document.querySelector('.blinking-cursor');
+
+        const commands = {
+            'help': 'Available commands: home, about, projects, contact',
+            'home': 'Welcome to my terminal-style webpage! Type "help" for available commands.',
+            'about': 'I am a 4th-year student at IIT BHU studying biomedical engineering with experience in AI research.',
+            'projects': '1. Automated Medical Coding System\n2. AI Immigration Reform Assistant\n3. Reinforcement Learning Research',
+            'contact': 'Feel free to connect via LinkedIn or GitHub.',
+        };
+
+        let index = 0;
+        const text = "Welcome to my terminal! Type 'help' to get started.";
+        function typeText() {
+            if (index < text.length) {
+                output.textContent += text[index];
+                index++;
+                setTimeout(typeText, 50);
+            } else {
+                setTimeout(() => {
+                    output.textContent += '\n> ';
+                }, 500);
+            }
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const inputText = output.textContent.split('\n').pop().replace('> ', '').trim();
+                if (commands[inputText]) {
+                    output.textContent += '\n' + commands[inputText] + '\n> ';
+                } else {
+                    output.textContent += '\nCommand not found. Type "help" for available commands.\n> ';
+                }
+            } else {
+                if (event.key.length === 1) {
+                    output.textContent += event.key;
+                } else if (event.key === 'Backspace') {
+                    output.textContent = output.textContent.slice(0, -1);
+                }
+            }
+        });
+
+        typeText();
+    </script>
 </body>
 </html>
