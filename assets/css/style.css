@@ -1,0 +1,92 @@
+/* assets/css/style.css */
+
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #000;
+  color: #fff;
+}
+
+/* Three.js Animation Container */
+#container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 25%; /* Top 25% of the viewport */
+  overflow: hidden;
+}
+
+/* Main Content */
+.content {
+  position: absolute;
+  top: 25%; /* Starts after the animation */
+  left: 0;
+  width: 100%;
+  height: 75%; /* Remaining 75% */
+  display: flex;
+}
+
+.left-pane, .right-pane {
+  width: 50%;
+  padding: 2em;
+}
+
+.left-pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#typewriter {
+  font-size: 2em;
+}
+
+.right-pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  margin: 1em 0;
+}
+
+.menu a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.5em;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+/* Optional: Make the site responsive */
+@media screen and (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .left-pane, .right-pane {
+    width: 100%;
+    text-align: center;
+  }
+
+  #typewriter {
+    font-size: 1.5em;
+  }
+
+  .menu a {
+    font-size: 1.2em;
+  }
+}
