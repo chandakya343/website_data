@@ -1,100 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal Style Webpage</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            background-color: #0d0d0d;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        #terminal {
-            width: 80%;
-            max-width: 800px;
-        }
-
-        .line {
-            white-space: pre-wrap;
-            font-size: 1.2em;
-        }
-
-        .blinking-cursor {
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            background-color: #00ff00;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Aryan Chandak Portfolio</title>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <div id="terminal">
-        <div class="line" id="output"></div>
-        <div class="line"><span class="blinking-cursor"></span></div>
+
+  <!-- Three.js Animation Container -->
+  <div id="container"></div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="left-pane">
+      <h1 id="typewriter"></h1>
     </div>
-    <script>
-        const output = document.getElementById('output');
-        const cursor = document.querySelector('.blinking-cursor');
+    <div class="right-pane">
+      <ul class="menu">
+        <li><a href="projects.html">&gt; My Projects</a></li>
+        <li><a href="blog.html">&gt; Blog</a></li>
+        <li><a href="contact.html">&gt; Contact Me</a></li>
+        <li><a href="about.html">&gt; About Me</a></li>
+      </ul>
+    </div>
+  </div>
 
-        const commands = {
-            'help': 'Available commands: home, about, projects, contact',
-            'home': 'Welcome to my terminal-style webpage! Type "help" for available commands.',
-            'about': 'I am a 4th-year student at IIT BHU studying biomedical engineering with experience in AI research.',
-            'projects': '1. Automated Medical Coding System\n2. AI Immigration Reform Assistant\n3. Reinforcement Learning Research',
-            'contact': 'Feel free to connect via LinkedIn or GitHub.',
-        };
+  <!-- Three.js Library (Version r88) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
 
-        let index = 0;
-        const text = "Welcome to my terminal! Type 'help' to get started.";
-        function typeText() {
-            if (index < text.length) {
-                output.textContent += text[index];
-                index++;
-                setTimeout(typeText, 50);
-            } else {
-                setTimeout(() => {
-                    output.textContent += '\n> ';
-                }, 500);
-            }
+  <!-- Vertex Shader -->
+  <script id="vertexShader" type="x-shader/x-vertex">
+    void main() {
+      gl_Position = vec4( position, 1.0 );
+    }
+  </script>
+
+  <!-- Fragment Shader -->
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    uniform vec2 u_resolution;
+    uniform vec4 u_mouse;
+    uniform float u_time;
+    uniform sampler2D u_noise;
+    uniform sampler2D u_buffer;
+    uniform bool u_renderpass;
+    uniform int u_frame;
+
+    #define PI 3.141592653589793
+    #define TAU 6.283185307179586
+
+    const float multiplier = 25.5;
+
+    const float zoomSpeed = 3.;
+    const int layers = 5;
+
+    mat2 rotate2d(float _angle){
+      return mat2(cos(_angle), sin(_angle),
+                  -sin(_angle), cos(_angle));
+    }
+
+    vec2 hash2(vec2 p)
+    {
+      vec2 o = texture2D( u_noise, (p+0.5)/256.0, -100.0 ).xy;
+      return o;
+    }
+
+    vec3 hsb2rgb( in vec3 c ){
+      vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                               6.0)-3.0)-1.0,
+                       0.0,
+                       1.0 );
+      rgb = rgb*rgb*(3.0-2.0*rgb);
+      return c.z * mix( vec3(1.0), rgb, c.y);
+    }
+
+    vec3 domain(vec2 z){
+      return vec3(hsb2rgb(vec3(atan(z.y,z.x)/TAU,1.,1.)));
+    }
+    vec3 colour(vec2 z) {
+        return domain(z);
+    }
+
+    // The render function is where we render the pattern to be added to the layer
+    vec3 render(vec2 uv, float scale) {
+      vec2 id = floor(uv);
+      vec2 subuv = fract(uv);
+      vec2 rand = hash2(id);
+      float bokeh = abs(scale) * 1.;
+
+      float particle = 0.;
+
+      if(length(rand) > 1.3) {
+        vec2 pos = subuv - .5;
+        float field = length(pos);
+        particle = smoothstep(.7, 0., field);
+        particle += smoothstep(.2, 0.2 * bokeh, field);
+      }
+      return vec3(particle * 2.);
+    }
+
+    vec3 renderLayer(int layer, int layers, vec2 uv, inout float opacity) {
+      vec2 _uv = uv;
+      float scale = mod((u_time + zoomSpeed / float(layers) * float(layer)) / zoomSpeed, -1.);
+      uv *= 20.;
+      uv *= scale * scale;
+      uv = rotate2d(u_time / 10.) * uv;
+      uv += vec2(25. + sin(u_time * .1) * .2) * float(layer);
+
+      vec3 pass = render(uv * multiplier, scale) * .2;
+
+      opacity = 1. + scale;
+      float _opacity = opacity;
+
+      float endOpacity = smoothstep(0., 0.4, scale * -1.);
+      opacity += endOpacity;
+
+      return pass * _opacity * endOpacity;
+    }
+
+    void main() {
+      vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.y, u_resolution.x);
+      vec2 sample = gl_FragCoord.xy / u_resolution.xy;
+
+      vec4 fragcolour;
+
+      if(u_renderpass == true) {
+
+        if(u_frame > 5) {
+          fragcolour = texture2D(u_buffer, sample) * 6.;
         }
-        
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const inputText = output.textContent.split('\n').pop().replace('> ', '').trim();
-                if (commands[inputText]) {
-                    output.textContent += '\n' + commands[inputText] + '\n> ';
-                } else {
-                    output.textContent += '\nCommand not found. Type "help" for available commands.\n> ';
-                }
-            } else {
-                if (event.key.length === 1) {
-                    output.textContent += event.key;
-                } else if (event.key === 'Backspace') {
-                    output.textContent = output.textContent.slice(0, -1);
-                }
-            }
-        });
 
-        typeText();
-    </script>
+        uv *= rotate2d(u_time * .5);
+
+        float opacity = 1.;
+        float opacity_sum = 1.;
+
+        for(int i = 1; i <= layers; i++) {
+          fragcolour += clamp(vec4(renderLayer(i, layers, uv, opacity), 1.) * 5., 0., 5.);
+          opacity_sum += opacity;
+        }
+
+        fragcolour *= 1. / opacity_sum;
+      } else {
+        fragcolour = texture2D(u_buffer, sample) * 5.;
+      }
+
+      gl_FragColor = fragcolour;
+    }
+  </script>
+
+  <!-- Custom Scripts -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/typewriter.js"></script>
+
 </body>
 </html>
