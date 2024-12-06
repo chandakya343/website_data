@@ -1,156 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Aryan Chandak Portfolio</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chandakya_renders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            background: black;
+        }
+
+        /* Cursor halo */
+        .cursor-halo {
+            width: 40px;
+            height: 40px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            animation: cursorPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes cursorPulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+        }
+
+        .layout {
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 40vh 60vh;
+            position: relative;
+        }
+
+        #shader-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 40vh;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.75) 10%,
+                rgba(0, 0, 0, 0.95) 100%
+            );
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-section {
+            display: flex;
+            align-items: center;
+            padding-left: 4rem;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards;
+        }
+
+        .fade-in h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+            animation: mainTextGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes mainTextGlow {
+            0% { text-shadow: 0 0 30px rgba(255, 255, 255, 0.7); }
+            50% { text-shadow: 0 0 50px rgba(255, 255, 255, 0.9); }
+            100% { text-shadow: 0 0 30px rgba(255, 255, 255, 0.7); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.7;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: subtitleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes subtitleGlow {
+            0% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 35px rgba(255, 255, 255, 0.7); }
+            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .right-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav li {
+            margin: 2rem 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            position: relative;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            animation: navGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes navGlow {
+            0% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+            50% { text-shadow: 0 0 25px rgba(255, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        nav a:hover {
+            opacity: 1;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-
-  <!-- Three.js Animation Container -->
-  <div id="container"></div>
-
-  <!-- Main Content -->
-  <div class="content">
-    <div class="left-pane">
-      <h1 id="typewriter"></h1>
+    <div class="cursor-halo"></div>
+    <div class="layout">
+        <div id="shader-container"></div>
+        <div class="overlay"></div>
+        
+        <main class="content">
+            <section class="left-section">
+                <div class="fade-in">
+                    <h1>Hello, I'm Aryan Chandak</h1>
+                    <p class="subtitle">😉</p>
+                </div>
+            </section>
+            
+            <section class="right-section">
+                <nav>
+                    <ul>
+                        <li><a href="#work">Work</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+            </section>
+        </main>
     </div>
-    <div class="right-pane">
-      <ul class="menu">
-        <li><a href="projects.html">&gt; My Projects</a></li>
-        <li><a href="blog.html">&gt; Blog</a></li>
-        <li><a href="contact.html">&gt; Contact Me</a></li>
-        <li><a href="about.html">&gt; About Me</a></li>
-      </ul>
-    </div>
-  </div>
 
-  <!-- Three.js Library (Version r88) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
-
-  <!-- Vertex Shader -->
-  <script id="vertexShader" type="x-shader/x-vertex">
-    void main() {
-      gl_Position = vec4( position, 1.0 );
-    }
-  </script>
-
-  <!-- Fragment Shader -->
-  <script id="fragmentShader" type="x-shader/x-fragment">
-    uniform vec2 u_resolution;
-    uniform vec4 u_mouse;
-    uniform float u_time;
-    uniform sampler2D u_noise;
-    uniform sampler2D u_buffer;
-    uniform bool u_renderpass;
-    uniform int u_frame;
-
-    #define PI 3.141592653589793
-    #define TAU 6.283185307179586
-
-    const float multiplier = 25.5;
-
-    const float zoomSpeed = 3.;
-    const int layers = 5;
-
-    mat2 rotate2d(float _angle){
-      return mat2(cos(_angle), sin(_angle),
-                  -sin(_angle), cos(_angle));
-    }
-
-    vec2 hash2(vec2 p)
-    {
-      vec2 o = texture2D( u_noise, (p+0.5)/256.0, -100.0 ).xy;
-      return o;
-    }
-
-    vec3 hsb2rgb( in vec3 c ){
-      vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
-                               6.0)-3.0)-1.0,
-                       0.0,
-                       1.0 );
-      rgb = rgb*rgb*(3.0-2.0*rgb);
-      return c.z * mix( vec3(1.0), rgb, c.y);
-    }
-
-    vec3 domain(vec2 z){
-      return vec3(hsb2rgb(vec3(atan(z.y,z.x)/TAU,1.,1.)));
-    }
-    vec3 colour(vec2 z) {
-        return domain(z);
-    }
-
-    // The render function is where we render the pattern to be added to the layer
-    vec3 render(vec2 uv, float scale) {
-      vec2 id = floor(uv);
-      vec2 subuv = fract(uv);
-      vec2 rand = hash2(id);
-      float bokeh = abs(scale) * 1.;
-
-      float particle = 0.;
-
-      if(length(rand) > 1.3) {
-        vec2 pos = subuv - .5;
-        float field = length(pos);
-        particle = smoothstep(.7, 0., field);
-        particle += smoothstep(.2, 0.2 * bokeh, field);
-      }
-      return vec3(particle * 2.);
-    }
-
-    vec3 renderLayer(int layer, int layers, vec2 uv, inout float opacity) {
-      vec2 _uv = uv;
-      float scale = mod((u_time + zoomSpeed / float(layers) * float(layer)) / zoomSpeed, -1.);
-      uv *= 20.;
-      uv *= scale * scale;
-      uv = rotate2d(u_time / 10.) * uv;
-      uv += vec2(25. + sin(u_time * .1) * .2) * float(layer);
-
-      vec3 pass = render(uv * multiplier, scale) * .2;
-
-      opacity = 1. + scale;
-      float _opacity = opacity;
-
-      float endOpacity = smoothstep(0., 0.4, scale * -1.);
-      opacity += endOpacity;
-
-      return pass * _opacity * endOpacity;
-    }
-
-    void main() {
-      vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.y, u_resolution.x);
-      vec2 sample = gl_FragCoord.xy / u_resolution.xy;
-
-      vec4 fragcolour;
-
-      if(u_renderpass == true) {
-
-        if(u_frame > 5) {
-          fragcolour = texture2D(u_buffer, sample) * 6.;
-        }
-
-        uv *= rotate2d(u_time * .5);
-
-        float opacity = 1.;
-        float opacity_sum = 1.;
-
-        for(int i = 1; i <= layers; i++) {
-          fragcolour += clamp(vec4(renderLayer(i, layers, uv, opacity), 1.) * 5., 0., 5.);
-          opacity_sum += opacity;
-        }
-
-        fragcolour *= 1. / opacity_sum;
-      } else {
-        fragcolour = texture2D(u_buffer, sample) * 5.;
-      }
-
-      gl_FragColor = fragcolour;
-    }
-  </script>
-
-  <!-- Custom Scripts -->
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/typewriter.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="shader.js"></script>
+    <script>
+        // Cursor halo effect
+        const cursorHalo = document.querySelector('.cursor-halo');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorHalo.style.left = e.clientX + 'px';
+            cursorHalo.style.top = e.clientY + 'px';
+        });
+    </script>
 </body>
 </html>
