@@ -1,0 +1,100 @@
+/* Swiss-style minimal stylesheet */
+:root {
+  --accent: #ee1c25; /* Swiss red */
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  color: #111;
+  background: #fff;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  text-decoration: underline;
+}
+
+.container {
+  width: min(90vw, 1100px);
+  margin-inline: auto;
+  padding-block: 2rem;
+}
+
+header {
+  border-bottom: 1px solid #ddd;
+  padding-block: 1rem;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 2rem;
+  font-weight: 500;
+}
+
+.section {
+  padding-block: 4rem;
+  border-bottom: 1px solid #eee;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 1.1;
+}
+
+.hero-sub {
+  font-size: 1.25rem;
+  max-width: 60ch;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+}
+
+blockquote {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 4px solid var(--accent);
+  font-style: italic;
+  color: #555;
+}
+
+footer {
+  padding-block: 2rem;
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+}
